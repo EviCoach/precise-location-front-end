@@ -11,9 +11,9 @@ function App() {
   const [mapLayers, setMapLayers] = useState([]);
 
   const removeForm = () => {
-    setMapLayers([]);
+    // setMapLayers([]);
     setShow(false);
-  } 
+  }
 
   const _onCreate = event => {
     const { layerType, layer } = event;
@@ -48,9 +48,16 @@ function App() {
       })
     });
   }
+
   const _onDeleted = event => {
     console.log("Deleted", event);
+    const { layers: { _layers } } = event;
+    Object.values(_layers).map(({_leaflet_id}) => {
+      setMapLayers((previousLayers) => previousLayers
+        .filter((l) => l.id !== _leaflet_id));
+    });
   }
+  
   const _onDrawStart = event => {
     console.log(event);
   }
