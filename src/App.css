@@ -1,13 +1,11 @@
-.main, .leaflet-container{
+.leaflet-container{
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100vh;
   width: 100%;
 }
 
-.map-view{
-  position: absolute;
-  width: 100%;
-  height: 100vh;
-}
 .border-map{
   /* border: 5px solid red; */
   width: 100%;
@@ -38,17 +36,4 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
