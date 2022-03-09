@@ -3,17 +3,9 @@ import axios from 'axios';
 import "./NewAreaForm.css";
 import close from "../../close.svg";
 import { transformLayersToAreas } from "../../Utilities/LocationHelper"
-const baseURL = "http:localhost:3000";
-const _axios = axios.create({
-    baseURL
-});
 
 const mainAxios = axios.create({
     baseURL: 'http://localhost:3000/'
-});
-
-const profileAxios = axios.create({
-    baseURL: 'http://localhost:6000/profile'
 });
 
 
@@ -32,12 +24,15 @@ export default function NewAreaForm(props) {
     // ];
 
     const submitMappedArea = async (layers) => {
-        const areas = transformLayersToAreas(layers)
-        areas.name = name;
-        areas.advertiser = name;
-        areas.description = description;
-        console.log("Transformed Areas ", JSON.stringify(areas));
-        mainAxios.post('/api/v2/areas', areas)
+        const data = {};
+        data.areas = transformLayersToAreas(layers);
+        data.name = name;
+        data.description = description;
+        data.type = data.areas.length >= 2 ? "regions" : "area";
+        console.log("Area is an array ", Array.isArray(data.areas))
+        console.log("Area is an array length ", data.areas.length)
+        console.log("Transformed Areas ", JSON.stringify(data));
+        mainAxios.post('/api/v2/areas', data)
             .then(function (response) {
                 console.log(response);
             })

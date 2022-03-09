@@ -1,0 +1,6 @@
+.show-mapped {
+  z-index: 1000;
+  left: 0;
+  bottom: 20px;
+  position: absolute;
+}
