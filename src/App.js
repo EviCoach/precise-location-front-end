@@ -118,12 +118,25 @@ function App() {
     const map = useMapEvents({
       click(event) {
         // map.locate()
-        console.log( event.latlng)
+        const data = {};
+        data.lat = event.latlng.lat;
+        data.lng = event.latlng.lng;
+        _axios.get(`/api/v2/areas/users?lat=${data.lat}&lng=${data.lng}`)
+          .then(function (response) {
+            console.log("Response from getting all users in a region", response.data);
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        console.log(event.latlng)
+        setPosition(event.latlng)
+        map.flyTo(event.latlng, map.getZoom())
       },
-      locationfound(e) {
-        setPosition(e.latlng)
-        map.flyTo(e.latlng, map.getZoom())
-      },
+      // locationfound(e) {
+      //   setPosition(e.latlng)
+      //   map.flyTo(e.latlng, map.getZoom())
+      // },
     })
 
     return position === null ? null : (
@@ -143,9 +156,7 @@ function App() {
 
         {show ? <NewAreaForm handler={removeForm} layers={mapLayers} /> : <div></div>}
         <MapContainer center={[6.451896921370773, 3.4709543175995354]} zoom={15}>
-          {places.map(place => <Polygon onClick={(event) => {
-            console.log("clicked");
-          }} key={Math.random()} pathOptions={purpleOptions} positions={places[0]} />)}
+          {/* {places.map(place => <Polygon key={Math.random()} pathOptions={purpleOptions} positions={places[0]} />)} */}
           <Polygon key={Math.random()} pathOptions={purpleOptions} positions={places} />
           <FeatureGroup>
             <EditControl position='topright'
