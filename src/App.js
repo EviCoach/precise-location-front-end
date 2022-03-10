@@ -10,12 +10,15 @@ import NewAreaForm from './components/new_area_form/NewAreaForm';
 const _axios = axios.create({
   baseURL: 'http://localhost:3000/'
 });
+
 const purpleOptions = { color: 'purple' }
 
 function App() {
   const [show, setShow] = useState(false);
   const [mapLayers, setMapLayers] = useState([]);
+  const [markers, setMarkers] = useState([]);
   const [places, setPlaces] = useState([]);
+  let foundUsersMarkers = [];
 
   const removeForm = () => {
     // setMapLayers([]);
@@ -68,6 +71,7 @@ function App() {
   const _onDrawStart = event => {
     console.log(event);
   }
+
   const _onDrawStop = event => {
     console.log(event);
   }
@@ -85,6 +89,7 @@ function App() {
   const _onDeleteVertex = event => {
     console.log("Vertex deleted", event);
   }
+
   let regions;
 
   const _onTouch = event => {
@@ -102,51 +107,40 @@ function App() {
         newPolygons.push(place.geometry.coordinates[0].map(value => value.reverse()));
       });
       setPlaces(newPolygons);
-
-
-      // const places = data.data.data[0];
-      // console.log("The places are ", JSON.stringify(places));
-      // console.log("Places ", JSON.stringify(places.geometry.coordinates[0]));
-      // // regions = places.map(place => <Polygon pathOptions={purpleOptions} positions={place.geometry.coordinates} />);
-      // regions = <Polygon pathOptions={purpleOptions} positions={places.geometry.coordinates[0]} />;
-      // setPlaces(places.geometry.coordinates[0]);
     });
   }
 
-  function LocationMarker() {
+
+
+  function LocationMarker(props) {
     const [position, setPosition] = useState(null)
+    // const [markers, setMarkers] = useState([])
     const map = useMapEvents({
-      click(event) {
+      async click(event) {
         // map.locate()
         const data = {};
         data.lat = event.latlng.lat;
         data.lng = event.latlng.lng;
-        _axios.get(`/api/v2/areas/users?lat=${data.lat}&lng=${data.lng}`)
-          .then(function (response) {
-            console.log("Response from getting all users in a region", response.data);
-            console.log(response);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-        console.log(event.latlng)
-        setPosition(event.latlng)
-        map.flyTo(event.latlng, map.getZoom())
-      },
-      // locationfound(e) {
-      //   setPosition(e.latlng)
-      //   map.flyTo(e.latlng, map.getZoom())
-      // },
-    })
+        let foundUsers = await _axios.get(`/api/v2/areas/users?lat=${data.lat}&lng=${data.lng}`);
+        foundUsersMarkers = foundUsers.data.data || []
+        props.setMarkers((prevMarker)=>foundUsersMarkers);
 
-    return position === null ? null : (
-      <Marker position={position}>
-        <Popup>You are here</Popup>
-      </Marker>
-    )
+        console.log("markerrrrrrssssssssss", markers);
+        console.log("foundUsersmarkers", foundUsersMarkers);
+
+        console.log(event.latlng)
+        // setPosition(event.latlng)
+        // map.flyTo(event.latlng, map.getZoom())
+      },
+    });
+
+    return markers.length <= 0 ? <div></div> :
+      markers.map(marker => <Marker key={Math.random()}
+        position={[marker.location.coordinates[1], marker.location.coordinates[0]]}><Popup>{marker.name}</Popup></Marker>)
   }
 
   console.log("The map layers in App component", mapLayers);
+  // console.log("The map layers in App component", mapLayers, "and markers ", markers);
 
   return (
     <div>
@@ -187,7 +181,16 @@ function App() {
             A pretty CSS3 popup. <br /> Easily customizable.
           </Popup>
         </Marker> */}
-          <LocationMarker />
+
+
+
+          <LocationMarker setMarkers={setMarkers} />
+
+          {/* <Marker position={[6.471988793580647, 3.4865283966064458]}>
+          <Popup>
+            A pretty CSS3 popup. <br /> Easily customizable.
+          </Popup>
+        </Marker> */}
 
         </MapContainer>
 
